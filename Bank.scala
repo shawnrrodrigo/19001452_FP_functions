@@ -1,62 +1,36 @@
-object Bank extends App {
+object Bank extends App{
+  val acc1 = new Account(111,"980227815V",15500.00)
+  val acc2 = new Account(222,"970820566V",25500.00)
+  val acc3 = new Account(333,"882620137V",-5500.00)
+  val acc4 = new Account(444,"899423119V",-10000.00)
 
-    var bank : List[Account] = List(
-       new Account("Shawn" , 111 , -1500) ,
-       new Account("Rodrigo" , 222 , 2500)
-    )
-
-    val find = ( n : Int , b : List[Account]) => b.filter( x => x.accNumber.equals( n ))
-
-    val overdraft = ( b : List[Account] ) => b.filter( x => x.balance < 0)
-
-    val balance = ( b: List[Account] ) => b.map( x => (x,x.balance) ).reduce( (a , c) => ( c._1 , a._2 + c._2) )
-
-    val interest = ( b : List[Account] ) => b.map( x => {
-        x.balance match {
-            case a if a >= 0 => x deposit x.balance * 0.05
-            case _ => x withdraw Math.abs(x.balance) * 0.01
-
-        }
-        x
-    })
-
-
-    println("bank " + bank )
+  var bank:List[Account]=List(acc1,acc2,acc3,acc4)
+  val overdraft = (b:List[Account]) => b.filter(x=>x.Bal.<(0.0))
+  val sumBal = (b:List[Account]) => b.reduce((a,b) => new Account(0,"Total",a.Bal+b.Bal))
+  val interest = (b:List[Account]) => b.map(x=> if (x.Bal<0) new Account(x.accNum,x.NIC,x.Bal*0.1+x.Bal) else new Account(x.accNum,x.NIC,x.Bal*0.05+x.Bal))
+  print("List of Accounts with negative balances=: ")
+  overdraft(bank).foreach{
     println()
-    find( 222 , bank)
-    
-    println("overdraft: " + overdraft( bank ) )
+    x => print(x.accNum)
     println()
-    println("balance " + balance( bank )._2 )
+  }
+  println()
+  println()
+  println(s"TSum of a;; account balances: "+sumBal(bank).Bal)
+  println()
+  println("Final balances of all accounts: ")
+  interest(bank).foreach{
+    x => print(x.accNum)
+    print(" = ")
+    print(x.Bal)
     println()
-
-    bank = interest( bank )
-
-    println("bank " + bank )
-    println()
-    println("balance " + balance( bank )._2 )
-    println()
-
+  }
 }
 
+class Account(n:Int, id:String, b:Double){
+  val accNum: Int = n
+  val NIC:String = id
+  var Bal: Double = b
 
-class Account ( x:String , y: Int , z : Double){
-
-    val name : String = x
-    val accNumber : Int = y
-    var balance : Double = z
-
-    def withdraw( amount : Double ) = this.balance -= amount
-
-    def deposit ( amount : Double ) = this.balance += amount
-
-    def transfer( amount : Double, t : Account ): Unit = {
-        this.balance =  this.balance - amount
-        t.balance = t.balance + amount
-    }
-
-
-    @Override
-    override def toString() : String = "Name : " + this.name + "\n Account Number : " + this.accNumber + "\n Balance : " + this.balance
-
+  override  def toString = s"[$accNum:$NIC:$Bal]"
 }
